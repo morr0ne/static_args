@@ -17,6 +17,7 @@ use std::{
 ///
 /// The following platforms should work without issues:
 /// - Any linux version using gnu libc, musl is unsupported
+/// - Recent android version (currently only tested on android 12, older versions have not been tested but might work too)
 /// - Fairly recent macos versions (older versions have not been tested but might work too)
 /// - Fairly recent versions of freebsd or derivates (older versions have not been tested but might work too)
 ///
@@ -87,6 +88,7 @@ static mut ARGV: *const *const c_char = null();
 #[cfg(any(
     all(target_os = "linux", target_env = "gnu"),
     target_os = "macos",
+    target_os = "android",
     target_os = "freebsd",
     feature = "unsafe_impl"
 ))]
@@ -94,6 +96,7 @@ static mut ARGV: *const *const c_char = null();
     any(
         all(target_os = "linux", target_env = "gnu"),
         target_os = "freebsd",
+        target_os = "android",
         feature = "unsafe_impl"
     ),
     link_section = ".init_array"
