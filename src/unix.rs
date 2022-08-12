@@ -21,6 +21,7 @@ use std::{
 /// - Fairly recent versions of freebsd or derivates (older versions have not been tested but might work too)
 ///
 /// On unsupported unix platforms it will still compile but since this kind of operations are very unsafe it will just return no args.
+/// If you wish to use it on unsupported unix platform you can enable the `unsafe_impl` feature but that will lead to undefined behavior.
 pub struct Args {
     next: *const *const c_char,
     end: *const *const c_char,
@@ -86,10 +87,15 @@ static mut ARGV: *const *const c_char = null();
 #[cfg(any(
     all(target_os = "linux", target_env = "gnu"),
     target_os = "macos",
-    target_os = "freebsd"
+    target_os = "freebsd",
+    feature = "unsafe_impl"
 ))]
 #[cfg_attr(
-    any(all(target_os = "linux", target_env = "gnu"), target_os = "freebsd"),
+    any(
+        all(target_os = "linux", target_env = "gnu"),
+        target_os = "freebsd",
+        feature = "unsafe_impl"
+    ),
     link_section = ".init_array"
 )]
 #[cfg_attr(target_os = "macos", link_section = "__DATA,__mod_init_func")]
