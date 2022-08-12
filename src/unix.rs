@@ -11,12 +11,23 @@ use std::{
     ptr::null,
 };
 
+/// An iterator over the operating system arguments.
+///
+/// The implementation relies on certain libc implementation passing `argv` and `argc` at the start of the program via the .init_array link section.
+///
+/// The following platforms should work without issues:
+/// - Any linux version using gnu libc, musl is unsupported
+/// - Fairly recent macos versions (older versions have not been tested but might work too)
+/// - Fairly recent versions of freebsd or derivates (older versions have not been tested but might work too)
+///
+/// On unsupported unix platforms it will still compile but since this kind of operations are very unsafe it will just return no args.
 pub struct Args {
     next: *const *const c_char,
     end: *const *const c_char,
 }
 
 impl Args {
+    /// Creates an empty iterator that will yield nothing.
     pub const fn empty() -> Self {
         Self {
             next: null(),
@@ -24,8 +35,10 @@ impl Args {
         }
     }
 
+    /// Creates a new iterator from the provided pointers
+    ///
     /// # Safety
-    /// TODO
+    /// Must point to valid `argc` and `argv` pointers provided by the libc implementation.
     pub const unsafe fn new(argc: c_int, argv: *const *const c_char) -> Self {
         Self {
             next: argv,
@@ -95,7 +108,8 @@ static ARGV_INIT_ARRAY: extern "C" fn(c_int, *const *const c_char, *const *const
     init_wrapper
 };
 
-// #[must_use]
+/// Returns a new iterator over the os args.
+#[must_use = "Iterators do nothing unless consumed"]
 pub fn args() -> Args {
     unsafe {
         if ARGV.is_null() {
