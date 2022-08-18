@@ -6,6 +6,8 @@ const QUOTE: u16 = b'"' as u16;
 const TAB: u16 = b'\t' as u16;
 const SPACE: u16 = b' ' as u16;
 
+pub type StaticArgsWindows = ArgsWindows<'static>;
+
 pub struct ArgsWindows<'a> {
     code_units: &'a [u16],
     first: bool,
@@ -221,7 +223,7 @@ static ARGS_INIT: extern "C" fn() = {
 };
 
 #[cfg(all(target_os = "windows"))]
-pub fn args_windows() -> ArgsWindows<'static> {
+pub fn static_args_windows() -> StaticArgsWindows {
     if unsafe { COMMAND_LINE_BUFFER.is_null() } {
         ArgsWindows::empty()
     } else {
