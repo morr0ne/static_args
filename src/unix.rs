@@ -20,17 +20,17 @@ use std::{
 /// - Recent android version (currently only tested on android 12, older versions have not been tested but might work too)
 /// - Fairly recent macos versions (older versions have not been tested but might work too)
 /// - Fairly recent versions of freebsd or derivates (older versions have not been tested but might work too)
-/// 
+///
 /// iOS/iPadOS have not been tested since I do not have a way to test on those platforms. They might work but support is unknown.
 ///
 /// On unsupported unix platforms it will still compile but since this kind of operations are very unsafe it will just return no args.
 /// If you wish to use it on unsupported unix platform you can enable the `unsafe_impl` feature but that will lead to undefined behavior.
-pub struct Args {
+pub struct StaticArgs {
     next: *const *const c_char,
     end: *const *const c_char,
 }
 
-impl Args {
+impl StaticArgs {
     /// Creates an empty iterator that will yield nothing.
     pub const fn empty() -> Self {
         Self {
@@ -51,7 +51,7 @@ impl Args {
     }
 }
 
-impl Iterator for Args {
+impl Iterator for StaticArgs {
     type Item = &'static CStr;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -70,7 +70,7 @@ impl Iterator for Args {
     }
 }
 
-impl ExactSizeIterator for Args {
+impl ExactSizeIterator for StaticArgs {
     fn len(&self) -> usize {
         #[cfg(feature = "std")]
         {
@@ -121,12 +121,12 @@ static ARGV_INIT_ARRAY: extern "C" fn(c_int, *const *const c_char, *const *const
 
 /// Returns a new iterator over the os args.
 #[must_use = "Iterators do nothing unless consumed"]
-pub fn args() -> Args {
+pub fn static_args() -> StaticArgs {
     unsafe {
         if ARGV.is_null() {
-            Args::empty()
+            StaticArgs::empty()
         } else {
-            Args::new(ARGC, ARGV)
+            StaticArgs::new(ARGC, ARGV)
         }
     }
 }
