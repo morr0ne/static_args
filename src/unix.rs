@@ -77,6 +77,7 @@ impl ExactSizeIterator for StaticArgs {
             self.end as usize - self.next as usize
         }
         #[cfg(not(feature = "std"))]
+        // This is safe because we are dealing with pointers and rust default behavior is actually worse.
         unsafe {
             // FIXME: Requires stabilization of unchecked_math. see rust-lang/rust#85122
             (self.end as usize).unchecked_sub(self.next as usize)
@@ -122,11 +123,12 @@ static ARGV_INIT_ARRAY: extern "C" fn(c_int, *const *const c_char, *const *const
 /// Returns a new iterator over the os args.
 #[must_use = "Iterators do nothing unless consumed"]
 pub fn static_args() -> StaticArgs {
-    unsafe {
-        if ARGV.is_null() {
-            StaticArgs::empty()
-        } else {
-            StaticArgs::new(ARGC, ARGV)
-        }
+    // Reading this statics is safe:
+    // - They start out as a 0 and a null pointer
+    // - They only ever get modified in the init_array section which assuming a working libc implementation it should be valid.
+    if unsafe { ARGV.is_null() } {
+        StaticArgs::empty()
+    } else {
+        unsafe { StaticArgs::new(ARGC, ARGV) }
     }
 }
