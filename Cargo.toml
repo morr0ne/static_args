@@ -1,6 +1,6 @@
 [package]
 name = "static_args"
-version = "0.1.0-alpha.2"
+version = "0.1.0-alpha.3"
 edition = "2021"
 description = "Get static args from the os"
 license = "MIT OR Apache-2.0"
