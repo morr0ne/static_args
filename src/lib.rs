@@ -1,5 +1,4 @@
-#![cfg_attr(not(feature = "std"), no_std)]
-#![cfg_attr(not(feature = "std"), feature(unchecked_math))]
+#![no_std]
 
 #[cfg(any(unix, feature = "unsafe_impl"))]
 mod unix;

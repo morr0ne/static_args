@@ -1,13 +1,5 @@
-#[cfg(not(feature = "std"))]
 use core::{
     ffi::{c_char, c_int, CStr},
-    ptr::null,
-};
-
-#[cfg(feature = "std")]
-use std::{
-    ffi::CStr,
-    os::raw::{c_char, c_int},
     ptr::null,
 };
 
@@ -70,18 +62,21 @@ impl Iterator for StaticArgs {
     }
 }
 
+#[rustversion::nightly]
 impl ExactSizeIterator for StaticArgs {
     fn len(&self) -> usize {
-        #[cfg(feature = "std")]
-        {
-            self.end as usize - self.next as usize
-        }
-        #[cfg(not(feature = "std"))]
         // This is safe because we are dealing with pointers and rust default behavior is actually worse.
         unsafe {
             // FIXME: Requires stabilization of unchecked_math. see rust-lang/rust#85122
             (self.end as usize).unchecked_sub(self.next as usize)
         }
+    }
+}
+
+#[rustversion::not(nightly)]
+impl ExactSizeIterator for StaticArgs {
+    fn len(&self) -> usize {
+        self.end as usize - self.next as usize
     }
 }
 
