@@ -2,6 +2,7 @@
 name = "static_args"
 version = "0.1.0-alpha.3"
 edition = "2021"
+rust = "1.64"
 description = "Get static args from the os"
 license = "MIT OR Apache-2.0"
 authors = ["Federico Maria Morrone <contact@morrone.dev>"]
