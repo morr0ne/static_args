@@ -11,8 +11,6 @@ documentation = "https://docs.rs/static_args"
 include = ["src/**/*.rs", "README.md", "LICENSE-APACHE", "LICENSE-MIT"]
 
 [features]
-default = ["std"]
-std = []
 unsafe_impl = []
 
 [target.'cfg(windows)'.dependencies]
@@ -26,3 +24,6 @@ strip = true
 
 [dev-dependencies]
 libc = { version = "0.2.132", default-features = false }
+
+[dependencies]
+rustversion = "1.0.9"
