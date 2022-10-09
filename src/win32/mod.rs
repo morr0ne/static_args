@@ -1,5 +1,7 @@
-use core::{arch::asm, ptr::null_mut};
-use windows::{core::PWSTR, Win32::System::Threading::PEB};
+use core::arch::asm;
+
+mod sys;
+use sys::{PEB, PWSTR};
 
 const BACKSLASH: u16 = b'\\' as u16;
 const QUOTE: u16 = b'"' as u16;
@@ -202,7 +204,7 @@ impl<'a> Iterator for ArgsWindows<'a> {
     }
 }
 
-static mut COMMAND_LINE_BUFFER: PWSTR = PWSTR(null_mut());
+static mut COMMAND_LINE_BUFFER: PWSTR = PWSTR::null();
 
 #[used]
 #[link_section = ".CRT$XCU"]
